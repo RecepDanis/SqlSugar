@@ -392,9 +392,21 @@ namespace SqlSugar
                 string addItem = string.Format(this.CreateTableColumn, this.SqlBuilder.GetTranslationColumnName(columnName.ToLower(isAutoToLowerCodeFirst)), dataType, dataSize, nullType, primaryKey, "");
                 if (item.IsIdentity)
                 {
-                    string length = dataType.Substring(dataType.Length - 1);
-                    string identityDataType = "serial" + length;
-                    addItem = addItem.Replace(dataType, identityDataType);
+                    var lowerDataType = dataType?.ToLower();
+                    string serialDataType;
+                    if (lowerDataType == "int8" || lowerDataType == "long" || lowerDataType == "bigint")
+                    {
+                        serialDataType = "serial8";
+                    }
+                    else if (lowerDataType == "int2" || lowerDataType == "smallint" || lowerDataType == "short")
+                    {
+                        serialDataType = "serial2";
+                    }
+                    else
+                    {
+                        serialDataType = "serial4";
+                    }
+                    addItem = addItem.Replace(dataType, serialDataType);
                 }
                 columnArray.Add(addItem);
             }
